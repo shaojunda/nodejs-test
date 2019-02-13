@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JSONP Demo</title>
+</head>
+<body>
+  <h5>你的账户余额是 <span id="amount">100</span></h5>
+  <button id="payButton">打钱</button>
+  <script>
+    payButton.addEventListener('click', (event) => {
+      let script = document.createElement('script')
+      let functionName = `SJD${parseInt(Math.random() * 10000)}`
+      window[functionName] = function(data) {
+        if (data == 'success') {
+          amount.innerText = amount.innerText - 1
+        }
+      }
+
+      script.src = `http://localhost:8888/pay?callback=${functionName}`
+      document.body.append(script)
+      script.onload = function(event) {
+        event.currentTarget.remove()
+        delete window[functionName]
+      }
+      script.onerror = function(event) {
+        alert('failed')
+        event.currentTarget.remove()
+        delete window[functionName]
+      }
+
+    })
+  </script>
+</body>
+</html>
